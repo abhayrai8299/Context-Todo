@@ -1,13 +1,16 @@
 import React, { useContext,useState,useEffect } from "react";
-import DatePicker from "react-datepicker";
 import {DateTimePickerComponent} from '@syncfusion/ej2-react-calendars';
 import { TaskListContext } from "../context/TaskListContext";
+import dayjs from 'dayjs';
 
 const TaskForm = () => {
-  const {addTask,clearList,editItem,editTask} = useContext(TaskListContext);
+  const {addTask,clearList,editItem,editTask,findTime,exist} = useContext(TaskListContext);
  const [title,setTitle]=useState("");
- const [date,setDate]=useState(new Date());
- console.log(date);
+ const [date,setDate]=useState("");
+ console.log('Yee!', date)
+ const time= dayjs(date).format('HH:mm:ss A');
+ console.log("UserTime:",time)
+  
  const handleChange=e=>{
     e.preventDefault()
     setTitle(e.target.value);
@@ -16,14 +19,23 @@ const TaskForm = () => {
   };
   const handleSubmit=e=>{
     e.preventDefault();
-    if(editItem===null)
+   
+    findTime(time)
+    if(exist)
+    {
+      alert("Already task is pending on the timestamp.")
+    }
+    else if(!exist)
+    {
+     if(editItem===null)
     {
         addTask(title,date);
 
     setTitle("")
     } else{
-        editTask(title,editItem.id,editItem.Date);
+        editTask(title,editItem.id,editItem.date);
     }
+  }
   };
   useEffect(()=>{
     if(editItem!==null){
@@ -43,7 +55,7 @@ const TaskForm = () => {
         placeholder="Add a Task..!"
         required
       ></input>
-      <DateTimePickerComponent onChange={date => setDate(date)}  ></DateTimePickerComponent>
+      <DateTimePickerComponent onChange={date => setDate( dayjs(date.value.toString()).format('DD/MM/YYYY  HH:mm:ss A '))}  ></DateTimePickerComponent>
       {/* <DatePicker
       selected={date} 
       className="task-input"
@@ -52,7 +64,7 @@ const TaskForm = () => {
     /> */}
       <div className="buttons">
         <button type="submit" className="btn add-task-btn">
-        {editItem?'Edit Task':"Add Task"}
+        {editItem?'Edit Task':"Add Task" }
         </button>
         <button onClick={clearList} className="btn clear-btn">Clear</button>
       </div>

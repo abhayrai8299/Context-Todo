@@ -1,23 +1,20 @@
 
 import React,{createContext,useState,useEffect} from 'react'
 import {v4 as uuid} from 'uuid';
+import dayjs from 'dayjs';
 export const TaskListContext=createContext();
-
-var CircularJSON = require('circular-json');
 const TaskListContextProvider=(props)=>{
-
   const initialState=JSON.parse(localStorage.getItem("tasks")) || []
   const [tasks,setTasks]=useState(initialState);
-  
+  const [exist,setExist]=useState(null)
   const [editItem,setEditItem]=useState(null);
 
 
 useEffect(()=>{
-  localStorage.setItem("tasks",CircularJSON.stringify(tasks));
+  localStorage.setItem("tasks",JSON.stringify(tasks));
 },[tasks]);
 
   const addTask=(title,date)=>{
-    console.log(date);
     setTasks([...tasks,{title,id:uuid(),date}]);
 
   };
@@ -27,8 +24,17 @@ useEffect(()=>{
   const clearList=()=>{
     setTasks([]);
   }
+  const findTime=time=>{
+    console.log("time" ,time);
+    console.log("Check" ,dayjs(tasks.date).format('HH:mm:ss A'));
+   const check=tasks.find(task=>dayjs(task.date).format('HH:mm:ss A')===time)
+   setExist(check)
+   console.log("Context" ,check);
+  }
+
   const findItem=id=>{
      const item=tasks.find(task=>task.id===id)
+     console.log(item)
      setEditItem(item);
   }
   const editTask=(title,id)=>{
@@ -41,7 +47,7 @@ useEffect(()=>{
 
 
   return (
-     <TaskListContext.Provider value={{tasks,addTask,removeTask,clearList,findItem,editTask,editItem,}}>
+     <TaskListContext.Provider value={{tasks,addTask,removeTask,clearList,findItem,editTask,editItem,exist,findTime}}>
       {props.children}
      </TaskListContext.Provider>
   )

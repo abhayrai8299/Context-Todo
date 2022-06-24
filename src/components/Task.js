@@ -1,13 +1,15 @@
-import React,{useContext} from 'react'
+import React,{useContext} from 'react';
+
 import { TaskListContext } from '../context/TaskListContext'
 
 const Task = ({task}) => {
-  console.log('ahaaa',task.date.value)
-  const {removeTask,findItem}=useContext(TaskListContext)
+  console.log('TaskPrint:',task.date)
+  const {removeTask,findItem,exist}=useContext(TaskListContext)
   return (
+    
     <li className='list-item'>
         <span>{task.title}</span>
-        <span>JSON.stringify{task.date.value}</span>
+        <span>{task.date}</span>
         <div>
           
             <button onClick={()=>removeTask(task.id)} className='btn-delete task-btn'>
